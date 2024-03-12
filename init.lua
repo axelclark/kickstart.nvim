@@ -178,6 +178,12 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 -- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 -- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
+-- vim-test mappings
+vim.keymap.set('n', '<leader>tn', ':TestNearest<CR>', { silent = true, desc = 'Run nearest test' })
+vim.keymap.set('n', '<leader>tt', ':TestFile<CR>', { silent = true, desc = 'Run test file' })
+vim.keymap.set('n', '<leader>ta', ':TestSuite<CR>', { silent = true, desc = 'Run test suite' })
+vim.keymap.set('n', '<leader>tl', ':TestLast<CR>', { silent = true, desc = 'Run last test' })
+
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -239,7 +245,7 @@ require('lazy').setup({
   { 'tpope/vim-sensible', lazy = false },
   { 'tpope/vim-projectionist', lazy = false },
   { 'tpope/vim-fugitive', lazy = false },
-  { 'vim-test/vim-test', event = 'User AstroFile' },
+  'vim-test/vim-test',
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following lua:
@@ -963,6 +969,11 @@ require('lazy').setup({
           \   }
           \ }
           \}
+    ]],
+
+  -- horizontal split for tests
+  vim.cmd [[
+      let test#strategy = "neovim"
     ]],
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
