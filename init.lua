@@ -856,6 +856,114 @@ require('lazy').setup({
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
+  vim.cmd [[
+    let g:projectionist_heuristics = {
+          \ "mix.exs": {
+          \   "lib/**/live/*_live.ex": {
+          \     "type": "live",
+          \     "alternate": "test/{dirname}/live/{basename}_live_test.exs",
+          \     "template": [
+          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Live do",
+          \       "  use {dirname|camelcase|capitalize}, :live_view",
+          \       "",
+          \       "end"
+          \     ]
+          \   },
+          \   "test/**/live/*_live_test.exs": {
+          \     "alternate": "lib/{dirname}/live/{basename}_live.ex",
+          \     "type": "test",
+          \     "template": [
+          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ViewTest do",
+          \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
+          \       "  import Phoenix.LiveViewTest",
+          \       "",
+          \       "end"
+          \     ]
+          \   },
+          \   "lib/**/components/*.ex": {
+          \     "type": "component",
+          \     "alternate": "test/{dirname}/components/{basename}_test.exs",
+          \     "template": [
+          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize} do",
+          \       "  use Phoenix.Component",
+          \       "end"
+          \     ]
+          \   },
+          \   "test/**/components/*_test.exs": {
+          \     "alternate": "lib/{dirname}/components/{basename}.ex",
+          \     "type": "test",
+          \     "template": [
+          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Test do",
+          \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
+          \       "",
+          \       "  alias {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}",
+          \       "",
+          \       "end"
+          \     ]
+          \   },
+          \   "lib/**/controllers/*_controller.ex": {
+          \     "type": "controller",
+          \     "alternate": "test/{dirname}/controllers/{basename}_controller_test.exs",
+          \     "template": [
+          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Controller do",
+          \       "  use {dirname|camelcase|capitalize}, :controller",
+          \       "end"
+          \     ]
+          \   },
+          \   "test/**/controllers/*_controller_test.exs": {
+          \     "alternate": "lib/{dirname}/controllers/{basename}_controller.ex",
+          \     "type": "test",
+          \     "template": [
+          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ControllerTest do",
+          \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
+          \       "",
+          \       "end"
+          \     ]
+          \   },
+          \   "lib/**/views/*_view.ex": {
+          \     "type": "view",
+          \     "alternate": "test/{dirname}/views/{basename}_view_test.exs",
+          \     "template": [
+          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}View do",
+          \       "  use {dirname|camelcase|capitalize}, :view",
+          \       "end"
+          \     ]
+          \   },
+          \   "test/**/views/*_view_test.exs": {
+          \     "alternate": "lib/{dirname}/views/{basename}_view.ex",
+          \     "type": "test",
+          \     "template": [
+          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ViewTest do",
+          \       "  use {dirname|camelcase|capitalize}.DataCase",
+          \       "",
+          \       "  alias {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}View",
+          \       "",
+          \       "end"
+          \     ]
+          \   },
+          \   "lib/*.ex": {
+          \     "alternate": "test/{}_test.exs",
+          \     "type": "lib",
+          \     "template": [
+          \       "defmodule {camelcase|capitalize|dot} do",
+          \       "end"
+          \     ]
+          \   },
+          \   "test/*_test.exs": {
+          \     "alternate": "lib/{}.ex",
+          \     "type": "test",
+          \     "template": [
+          \       "defmodule {camelcase|capitalize|dot}Test do",
+          \       "  use {dirname|camelcase|capitalize}.DataCase",
+          \       "",
+          \       "  alias {camelcase|capitalize|dot}",
+          \       "",
+          \       "end"
+          \     ]
+          \   }
+          \ }
+          \}
+    ]],
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
