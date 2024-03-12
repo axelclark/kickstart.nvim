@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -236,6 +236,12 @@ require('lazy').setup({
 
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
+  { 'tpope/vim-sensible', lazy = false },
+  { 'tpope/vim-projectionist', lazy = false },
+  { 'tpope/vim-fugitive', lazy = false },
+  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make', lazy = false },
+  { 'tpope/vim-surround', event = 'User AstroFile' },
+  { 'vim-test/vim-test', event = 'User AstroFile' },
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following lua:
