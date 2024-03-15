@@ -247,10 +247,10 @@ require('lazy').setup({
   --    require('Comment').setup({})
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
-  { 'tpope/vim-sensible', lazy = false },
+  { 'numToStr/Comment.nvim',   opts = {} },
+  { 'tpope/vim-sensible',      lazy = false },
   { 'tpope/vim-projectionist', lazy = false },
-  { 'tpope/vim-fugitive', lazy = false },
+  { 'tpope/vim-fugitive',      lazy = false },
   'vim-test/vim-test',
 
   -- Here is a more advanced example where we pass configuration
@@ -286,7 +286,7 @@ require('lazy').setup({
   -- after the plugin has been loaded:
   --  config = function() ... end
 
-  { -- Useful plugin to show you pending keybinds.
+  {                     -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     config = function() -- This is the function that runs, AFTER loading
@@ -306,9 +306,9 @@ require('lazy').setup({
     'max397574/better-escape.nvim',
     config = function()
       require('better_escape').setup {
-        mapping = { 'jk', 'kj' }, -- a table with mappings to use
+        mapping = { 'jk', 'kj' },   -- a table with mappings to use
         timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. Use option timeoutlen by default
-        clear_empty_lines = false, -- clear line after escaping if there is only whitespace
+        clear_empty_lines = false,  -- clear line after escaping if there is only whitespace
         -- keys = '<Esc>', -- keys used for escaping, if it is a function will use the result everytime
         -- example(recommended)
         keys = function()
@@ -347,7 +347,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -748,12 +748,14 @@ require('lazy').setup({
       luasnip.config.setup {}
       local lspkind = require 'lspkind'
 
+      ---@diagnostic disable-next-line: missing-fields
       cmp.setup {
         snippet = {
           expand = function(args)
             luasnip.lsp_expand(args.body)
           end,
         },
+        ---@diagnostic disable-next-line: missing-fields
         completion = { completeopt = 'menu,menuone,noinsert' },
 
         -- For an understanding of why these mappings were
@@ -844,7 +846,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'kanagawa'
+      vim.cmd.colorscheme 'kanagawa-wave'
 
       -- You can configure highlights by doing something like
       vim.cmd.hi 'Comment gui=none'
@@ -853,7 +855,6 @@ require('lazy').setup({
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
