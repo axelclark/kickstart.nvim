@@ -116,7 +116,10 @@ vim.opt.showmode = false
 vim.opt.clipboard = 'unnamedplus'
 
 -- Enable break indent
+vim.opt.wrap = true
 vim.opt.breakindent = true
+vim.opt.breakindentopt = 'sbr'
+vim.opt.showbreak = '↪>\\ '
 
 -- Save undo history
 vim.opt.undofile = true
@@ -150,6 +153,11 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
+
+vim.opt.spell = false
+
+vim.opt.swapfile = false
+vim.opt.backup = false
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -194,8 +202,8 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- NeoTree keybinds
-vim.keymap.set('n', '<leader>e', ':Neotree toggle reveal<cr>', { desc = 'open Neotree side' })
-vim.keymap.set('n', '<leader>k', ':Neotree toggle current reveal_force_cwd<cr>', { desc = 'open Neotree' })
+vim.keymap.set('n', '\\', ':Neotree toggle reveal<cr>', { desc = 'open Neotree side' })
+vim.keymap.set('n', '|', ':Neotree toggle current reveal_force_cwd<cr>', { desc = 'open Neotree' })
 
 vim.keymap.set('n', '<leader><leader>', '<C-^>', { desc = 'Switch between the last two files' })
 
@@ -247,10 +255,10 @@ require('lazy').setup({
   --    require('Comment').setup({})
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim',   opts = {} },
-  { 'tpope/vim-sensible',      lazy = false },
+  { 'numToStr/Comment.nvim', opts = {} },
+  { 'tpope/vim-sensible', lazy = false },
   { 'tpope/vim-projectionist', lazy = false },
-  { 'tpope/vim-fugitive',      lazy = false },
+  { 'tpope/vim-fugitive', lazy = false },
   'vim-test/vim-test',
 
   -- Here is a more advanced example where we pass configuration
@@ -286,7 +294,7 @@ require('lazy').setup({
   -- after the plugin has been loaded:
   --  config = function() ... end
 
-  {                     -- Useful plugin to show you pending keybinds.
+  { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     config = function() -- This is the function that runs, AFTER loading
@@ -306,9 +314,9 @@ require('lazy').setup({
     'max397574/better-escape.nvim',
     config = function()
       require('better_escape').setup {
-        mapping = { 'jk', 'kj' },   -- a table with mappings to use
+        mapping = { 'jk', 'kj' }, -- a table with mappings to use
         timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. Use option timeoutlen by default
-        clear_empty_lines = false,  -- clear line after escaping if there is only whitespace
+        clear_empty_lines = false, -- clear line after escaping if there is only whitespace
         -- keys = '<Esc>', -- keys used for escaping, if it is a function will use the result everytime
         -- example(recommended)
         keys = function()
@@ -347,7 +355,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -850,6 +858,9 @@ require('lazy').setup({
 
       -- You can configure highlights by doing something like
       vim.cmd.hi 'Comment gui=none'
+
+      -- Configure Elixir module color
+      vim.api.nvim_set_hl(0, '@module.elixir', { fg = '#7aa89f' })
     end,
   },
 
