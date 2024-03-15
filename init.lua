@@ -442,6 +442,10 @@ require('lazy').setup({
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
       { 'j-hui/fidget.nvim', opts = {} },
+
+      -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
+      -- used for completion, annotations and signatures of Neovim apis
+      { 'folke/neodev.nvim', opts = {} },
     },
     config = function()
       -- Brief Aside: **What is LSP?**
@@ -488,7 +492,7 @@ require('lazy').setup({
 
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
-          --  To jump back, press <C-T>.
+          --  To jump back, press <C-t>.
           map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
           -- Find references for the word under your cursor.
@@ -604,18 +608,6 @@ require('lazy').setup({
           -- capabilities = {},
           settings = {
             Lua = {
-              runtime = { version = 'LuaJIT' },
-              workspace = {
-                checkThirdParty = false,
-                -- Tells lua_ls where to find all the Lua files that you have loaded
-                -- for your neovim configuration.
-                library = {
-                  '${3rd}/luv/library',
-                  unpack(vim.api.nvim_get_runtime_file('', true)),
-                },
-                -- If lua_ls is really slow on your computer, you can try this instead:
-                -- library = { vim.env.VIMRUNTIME },
-              },
               completion = {
                 callSnippet = 'Replace',
               },
@@ -903,36 +895,37 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    config = function()
+    opts = {
+      ensure_installed = {
+        'bash',
+        'c',
+        'cmake',
+        'cpp',
+        'css',
+        'eex',
+        'elixir',
+        'go',
+        'heex',
+        'html',
+        'json',
+        'lua',
+        'markdown',
+        'python',
+        'rust',
+        'typescript',
+        'vim',
+        'vimdoc',
+      },
+      -- Autoinstall languages that are not installed
+      auto_install = true,
+      highlight = { enable = true },
+      indent = { enable = true },
+    },
+    config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 
       ---@diagnostic disable-next-line: missing-fields
-      require('nvim-treesitter.configs').setup {
-        ensure_installed = {
-          'bash',
-          'c',
-          'cmake',
-          'cpp',
-          'css',
-          'eex',
-          'elixir',
-          'go',
-          'heex',
-          'html',
-          'json',
-          'lua',
-          'markdown',
-          'python',
-          'rust',
-          'typescript',
-          'vim',
-          'vimdoc',
-        },
-        -- Autoinstall languages that are not installed
-        auto_install = true,
-        highlight = { enable = true },
-        indent = { enable = true },
-      }
+      require('nvim-treesitter.configs').setup(opts)
 
       -- There are additional nvim-treesitter modules that you can use to interact
       -- with nvim-treesitter. You should go explore a few and see what interests you:
