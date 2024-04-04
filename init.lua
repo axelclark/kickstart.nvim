@@ -100,6 +100,7 @@ vim.g.have_nerd_font = true
 
 -- Make line numbers default
 vim.opt.number = true
+
 -- You can also add relative line numbers, for help with jumping.
 --  Experiment for yourself to see if you like it!
 -- vim.opt.relativenumber = true
@@ -113,7 +114,7 @@ vim.opt.showmode = false
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.opt.clipboard = 'unnamedplus'
+--  vim.opt.clipboard = 'unnamedplus'
 
 -- Enable break indent
 vim.opt.wrap = true
@@ -130,6 +131,9 @@ vim.opt.smartcase = true
 
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
+--
+-- set column line at 98 for elixir formatter breaks
+vim.opt.colorcolumn = '98'
 
 -- Decrease update time
 vim.opt.updatetime = 250
@@ -175,6 +179,9 @@ vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagn
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- nvim-terminal mappings
+vim.keymap.set('n', '<leader>to', ':tabe | term<CR>', { desc = 'Open terminal in new tab' })
+
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -184,7 +191,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+-- vim.keymap.set('n', '<left>', '<cmd>echo ""<CR>')
 -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
 -- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 -- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
@@ -209,6 +216,9 @@ vim.keymap.set('n', '\\', ':Neotree toggle reveal<cr>', { desc = 'open Neotree s
 vim.keymap.set('n', '|', ':Neotree toggle current reveal_force_cwd<cr>', { desc = 'open Neotree' })
 
 vim.keymap.set('n', '<leader><leader>', '<C-^>', { desc = 'Switch between the last two files' })
+
+-- nvim-config mappings
+vim.keymap.set('n', '<leader>vi', ':tabe $MYVIMRC<CR>', { desc = 'Open nvim config in new tab' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
