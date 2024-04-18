@@ -211,6 +211,8 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+vim.keymap.set('n', 'bl', ':ls<CR>:b<Space>', { noremap = true, desc = 'list buffers for navigation' })
+
 -- NeoTree keybinds
 vim.keymap.set('n', '\\', ':Neotree toggle reveal<cr>', { desc = 'open Neotree side' })
 vim.keymap.set('n', '|', ':Neotree toggle current reveal_force_cwd<cr>', { desc = 'open Neotree' })
