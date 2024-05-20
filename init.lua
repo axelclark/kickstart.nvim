@@ -222,6 +222,10 @@ vim.keymap.set('n', '<leader><leader>', '<C-^>', { desc = 'Switch between the la
 -- nvim-config mappings
 vim.keymap.set('n', '<leader>vi', ':tabe $MYVIMRC<CR>', { desc = 'Open nvim config in new tab' })
 
+-- move through linewraps like they are normal lines
+vim.api.nvim_set_keymap('n', 'k', 'gk', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'j', 'gj', { noremap = true, silent = true })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
