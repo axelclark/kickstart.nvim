@@ -780,14 +780,16 @@ require('lazy').setup({
           require('copilot_cmp').setup()
         end,
       },
-      'onsails/lspkind.nvim',
+      -- hide lspkind
+      -- 'onsails/lspkind.nvim',
     },
     config = function()
       -- See `:help cmp`
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
       luasnip.config.setup {}
-      local lspkind = require 'lspkind'
+      -- hide lspkind
+      -- local lspkind = require 'lspkind'
 
       cmp.setup {
         snippet = {
@@ -867,14 +869,15 @@ require('lazy').setup({
           },
         },
 
-        formatting = {
-          format = lspkind.cmp_format {
-            mode = 'symbol',
-            symbol_map = {
-              Copilot = '',
-            },
-          },
-        },
+        -- hide lspkind
+        -- formatting = {
+        --   format = lspkind.cmp_format {
+        --     mode = 'symbol',
+        --     symbol_map = {
+        --       Copilot = '',
+        --     },
+        --   },
+        -- },
       }
     end,
   },
