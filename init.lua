@@ -291,6 +291,7 @@ require('lazy').setup({
   { 'tpope/vim-sensible', lazy = false },
   { 'tpope/vim-projectionist', lazy = false },
   { 'tpope/vim-fugitive', lazy = false },
+  { 'tpope/vim-abolish', lazy = false },
   { 'amadeus/vim-mjml', lazy = false },
   'vim-test/vim-test',
 
