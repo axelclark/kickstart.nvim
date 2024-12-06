@@ -754,6 +754,7 @@ require('lazy').setup({
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
         javascript = { { 'prettierd', 'prettier' } },
+        css = { { 'prettierd', 'prettier' } },
         html = { { 'prettierd', 'prettier' } },
         mjml = { { 'prettierd', 'prettier' } },
       },
