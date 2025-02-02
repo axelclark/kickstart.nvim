@@ -331,32 +331,63 @@ require('lazy').setup({
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
-    config = function() -- This is the function that runs, AFTER loading
-      require('which-key').setup()
+    opts = {
+      -- delay between pressing a key and opening which-key (milliseconds)
+      -- this setting is independent of vim.opt.timeoutlen
+      delay = 0,
+      icons = {
+        -- set icon mappings to true if you have a Nerd Font
+        mappings = vim.g.have_nerd_font,
+        -- If you are using a Nerd Font: set icons.keys to an empty table which will use the
+        -- default which-key.nvim defined Nerd Font icons, otherwise define a string table
+        keys = vim.g.have_nerd_font and {} or {
+          Up = '<Up> ',
+          Down = '<Down> ',
+          Left = '<Left> ',
+          Right = '<Right> ',
+          C = '<C-…> ',
+          M = '<M-…> ',
+          D = '<D-…> ',
+          S = '<S-…> ',
+          CR = '<CR> ',
+          Esc = '<Esc> ',
+          ScrollWheelDown = '<ScrollWheelDown> ',
+          ScrollWheelUp = '<ScrollWheelUp> ',
+          NL = '<NL> ',
+          BS = '<BS> ',
+          Space = '<Space> ',
+          Tab = '<Tab> ',
+          F1 = '<F1>',
+          F2 = '<F2>',
+          F3 = '<F3>',
+          F4 = '<F4>',
+          F5 = '<F5>',
+          F6 = '<F6>',
+          F7 = '<F7>',
+          F8 = '<F8>',
+          F9 = '<F9>',
+          F10 = '<F10>',
+          F11 = '<F11>',
+          F12 = '<F12>',
+        },
+      },
 
       -- Document existing key chains
-      require('which-key').register {
-        ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-        ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-        ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-        ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-        ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-      }
-    end,
+      spec = {
+        { '<leader>c', group = '[C]ode', mode = { 'n', 'x' } },
+        { '<leader>d', group = '[D]ocument' },
+        { '<leader>r', group = '[R]ename' },
+        { '<leader>s', group = '[S]earch' },
+        { '<leader>w', group = '[W]orkspace' },
+        { '<leader>t', group = '[T]oggle' },
+        { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+      },
+    },
   },
   {
     'max397574/better-escape.nvim',
     config = function()
-      require('better_escape').setup {
-        mapping = { 'jk', 'kj' }, -- a table with mappings to use
-        timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. Use option timeoutlen by default
-        clear_empty_lines = false, -- clear line after escaping if there is only whitespace
-        -- keys = '<Esc>', -- keys used for escaping, if it is a function will use the result everytime
-        -- example(recommended)
-        keys = function()
-          return vim.api.nvim_win_get_cursor(0)[2] > 1 and '<esc>l' or '<esc>'
-        end,
-      }
+      require('better_escape').setup()
     end,
   },
 
@@ -475,17 +506,37 @@ require('lazy').setup({
   { -- a Neovim plugin designed to emulate the behavior of the Cursor AI IDE
     'yetone/avante.nvim',
     event = 'VeryLazy',
+    lazy = false,
+    version = '*',
     build = 'make',
     opts = {
       -- add any opts here
     },
     dependencies = {
-      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
       'stevearc/dressing.nvim',
       'nvim-lua/plenary.nvim',
       'MunifTanjim/nui.nvim',
-      --- The below is optional, make sure to setup it properly if you have lazy=true
+      --- The below dependencies are optional,
+      'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
+      'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
       {
+        -- support for image pasting
+        'HakonHarnes/img-clip.nvim',
+        event = 'VeryLazy',
+        opts = {
+          -- recommended settings
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+          },
+        },
+      },
+      {
+        -- Make sure to set this up properly if you have lazy=true
         'MeanderingProgrammer/render-markdown.nvim',
         opts = {
           file_types = { 'markdown', 'Avante' },
@@ -642,7 +693,7 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        tsserver = {},
+        ts_ls = {},
         --
         tailwindcss = {
 
@@ -1021,120 +1072,6 @@ require('lazy').setup({
       --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
-  vim.cmd [[
-    let g:projectionist_heuristics = {
-          \ "mix.exs": {
-          \   "lib/**/live/*_live.ex": {
-          \     "type": "live",
-          \     "alternate": "test/{dirname}/live/{basename}_live_test.exs",
-          \     "template": [
-          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Live do",
-          \       "  use {dirname|camelcase|capitalize}, :live_view",
-          \       "",
-          \       "end"
-          \     ]
-          \   },
-          \   "test/**/live/*_live_test.exs": {
-          \     "alternate": "lib/{dirname}/live/{basename}_live.ex",
-          \     "type": "test",
-          \     "template": [
-          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ViewTest do",
-          \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
-          \       "  import Phoenix.LiveViewTest",
-          \       "",
-          \       "end"
-          \     ]
-          \   },
-          \   "lib/**/components/*.ex": {
-          \     "type": "component",
-          \     "alternate": "test/{dirname}/components/{basename}_test.exs",
-          \     "template": [
-          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize} do",
-          \       "  use Phoenix.Component",
-          \       "end"
-          \     ]
-          \   },
-          \   "test/**/components/*_test.exs": {
-          \     "alternate": "lib/{dirname}/components/{basename}.ex",
-          \     "type": "test",
-          \     "template": [
-          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Test do",
-          \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
-          \       "",
-          \       "  alias {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}",
-          \       "",
-          \       "end"
-          \     ]
-          \   },
-          \   "lib/**/controllers/*_controller.ex": {
-          \     "type": "controller",
-          \     "alternate": "test/{dirname}/controllers/{basename}_controller_test.exs",
-          \     "template": [
-          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Controller do",
-          \       "  use {dirname|camelcase|capitalize}, :controller",
-          \       "end"
-          \     ]
-          \   },
-          \   "test/**/controllers/*_controller_test.exs": {
-          \     "alternate": "lib/{dirname}/controllers/{basename}_controller.ex",
-          \     "type": "test",
-          \     "template": [
-          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ControllerTest do",
-          \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
-          \       "",
-          \       "end"
-          \     ]
-          \   },
-          \   "lib/**/views/*_view.ex": {
-          \     "type": "view",
-          \     "alternate": "test/{dirname}/views/{basename}_view_test.exs",
-          \     "template": [
-          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}View do",
-          \       "  use {dirname|camelcase|capitalize}, :view",
-          \       "end"
-          \     ]
-          \   },
-          \   "test/**/views/*_view_test.exs": {
-          \     "alternate": "lib/{dirname}/views/{basename}_view.ex",
-          \     "type": "test",
-          \     "template": [
-          \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ViewTest do",
-          \       "  use {dirname|camelcase|capitalize}.DataCase",
-          \       "",
-          \       "  alias {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}View",
-          \       "",
-          \       "end"
-          \     ]
-          \   },
-          \   "lib/*.ex": {
-          \     "alternate": "test/{}_test.exs",
-          \     "type": "lib",
-          \     "template": [
-          \       "defmodule {camelcase|capitalize|dot} do",
-          \       "end"
-          \     ]
-          \   },
-          \   "test/*_test.exs": {
-          \     "alternate": "lib/{}.ex",
-          \     "type": "test",
-          \     "template": [
-          \       "defmodule {camelcase|capitalize|dot}Test do",
-          \       "  use {dirname|camelcase|capitalize}.DataCase",
-          \       "",
-          \       "  alias {camelcase|capitalize|dot}",
-          \       "",
-          \       "end"
-          \     ]
-          \   }
-          \ }
-          \}
-    ]],
-
-  -- horizontal split for tests
-  vim.cmd [[
-      let test#strategy = "neovim"
-    ]],
-
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- put them in the right spots if you want.
@@ -1174,6 +1111,121 @@ require('lazy').setup({
     },
   },
 })
+
+-- Configure projectionist
+vim.cmd [[
+  let g:projectionist_heuristics = {
+        \ "mix.exs": {
+        \   "lib/**/live/*_live.ex": {
+        \     "type": "live",
+        \     "alternate": "test/{dirname}/live/{basename}_live_test.exs",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Live do",
+        \       "  use {dirname|camelcase|capitalize}, :live_view",
+        \       "",
+        \       "end"
+        \     ]
+        \   },
+        \   "test/**/live/*_live_test.exs": {
+        \     "alternate": "lib/{dirname}/live/{basename}_live.ex",
+        \     "type": "test",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ViewTest do",
+        \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
+        \       "  import Phoenix.LiveViewTest",
+        \       "",
+        \       "end"
+        \     ]
+        \   },
+        \   "lib/**/components/*.ex": {
+        \     "type": "component",
+        \     "alternate": "test/{dirname}/components/{basename}_test.exs",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize} do",
+        \       "  use Phoenix.Component",
+        \       "end"
+        \     ]
+        \   },
+        \   "test/**/components/*_test.exs": {
+        \     "alternate": "lib/{dirname}/components/{basename}.ex",
+        \     "type": "test",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Test do",
+        \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
+        \       "",
+        \       "  alias {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}",
+        \       "",
+        \       "end"
+        \     ]
+        \   },
+        \   "lib/**/controllers/*_controller.ex": {
+        \     "type": "controller",
+        \     "alternate": "test/{dirname}/controllers/{basename}_controller_test.exs",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Controller do",
+        \       "  use {dirname|camelcase|capitalize}, :controller",
+        \       "end"
+        \     ]
+        \   },
+        \   "test/**/controllers/*_controller_test.exs": {
+        \     "alternate": "lib/{dirname}/controllers/{basename}_controller.ex",
+        \     "type": "test",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ControllerTest do",
+        \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
+        \       "",
+        \       "end"
+        \     ]
+        \   },
+        \   "lib/**/views/*_view.ex": {
+        \     "type": "view",
+        \     "alternate": "test/{dirname}/views/{basename}_view_test.exs",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}View do",
+        \       "  use {dirname|camelcase|capitalize}, :view",
+        \       "end"
+        \     ]
+        \   },
+        \   "test/**/views/*_view_test.exs": {
+        \     "alternate": "lib/{dirname}/views/{basename}_view.ex",
+        \     "type": "test",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ViewTest do",
+        \       "  use {dirname|camelcase|capitalize}.DataCase",
+        \       "",
+        \       "  alias {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}View",
+        \       "",
+        \       "end"
+        \     ]
+        \   },
+        \   "lib/*.ex": {
+        \     "alternate": "test/{}_test.exs",
+        \     "type": "lib",
+        \     "template": [
+        \       "defmodule {camelcase|capitalize|dot} do",
+        \       "end"
+        \     ]
+        \   },
+        \   "test/*_test.exs": {
+        \     "alternate": "lib/{}.ex",
+        \     "type": "test",
+        \     "template": [
+        \       "defmodule {camelcase|capitalize|dot}Test do",
+        \       "  use {dirname|camelcase|capitalize}.DataCase",
+        \       "",
+        \       "  alias {camelcase|capitalize|dot}",
+        \       "",
+        \       "end"
+        \     ]
+        \   }
+        \ }
+        \}
+  ]]
+
+-- Configure test strategy
+vim.cmd [[
+    let test#strategy = "neovim"
+  ]]
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
