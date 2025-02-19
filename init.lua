@@ -166,9 +166,6 @@ vim.opt.spell = false
 vim.opt.swapfile = false
 vim.opt.backup = false
 
--- recommended for avante.nvim
--- views can only be fully collapsed with the global statusline
-vim.opt.laststatus = 3
 -- Default splitting will cause your main splits to jump when opening an edgebar.
 -- To prevent this, set `splitkeep` to either `screen` or `topline`.
 vim.opt.splitkeep = 'screen'
@@ -228,6 +225,9 @@ vim.keymap.set('n', '<leader><leader>', '<C-^>', { desc = 'Switch between the la
 
 -- nvim-config mappings
 vim.keymap.set('n', '<leader>vi', ':tabe $MYVIMRC<CR>', { desc = 'Open nvim config in new tab' })
+
+-- fugitive mappings
+vim.keymap.set('n', '<leader>gb', ':Git blame<CR>', { desc = 'Git [B]lame' })
 
 -- move through linewraps like they are normal lines
 vim.api.nvim_set_keymap('n', 'k', 'gk', { noremap = true, silent = true })
@@ -381,6 +381,7 @@ require('lazy').setup({
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>l', group = '[L]LM Actions' },
       },
     },
   },
@@ -503,46 +504,52 @@ require('lazy').setup({
       end, { desc = '[S]earch [N]eovim files' })
     end,
   },
-  { -- a Neovim plugin designed to emulate the behavior of the Cursor AI IDE
-    'yetone/avante.nvim',
-    event = 'VeryLazy',
-    lazy = false,
-    version = '*',
-    build = 'make',
-    opts = {
-      -- add any opts here
-    },
-    dependencies = {
-      'stevearc/dressing.nvim',
-      'nvim-lua/plenary.nvim',
-      'MunifTanjim/nui.nvim',
-      --- The below dependencies are optional,
-      'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
-      'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
-      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
-      {
-        -- support for image pasting
-        'HakonHarnes/img-clip.nvim',
-        event = 'VeryLazy',
-        opts = {
-          -- recommended settings
-          default = {
-            embed_image_as_base64 = false,
-            prompt_for_file_name = false,
-            drag_and_drop = {
-              insert_mode = true,
+  { -- AI-powered coding, seamlessly in Neovim
+    'olimorris/codecompanion.nvim',
+    config = function()
+      require('codecompanion').setup {
+        strategies = {
+          chat = {
+            adapter = 'anthropic',
+            slash_commands = {
+              ['file'] = {
+                -- Location to the slash command in CodeCompanion
+                callback = 'strategies.chat.slash_commands.file',
+                description = 'Select a file using Telescope',
+                opts = {
+                  provider = 'telescope',
+                  contains_code = true,
+                },
+              },
             },
           },
+          inline = {
+            adapter = 'anthropic',
+          },
         },
-      },
-      {
-        -- Make sure to set this up properly if you have lazy=true
-        'MeanderingProgrammer/render-markdown.nvim',
-        opts = {
-          file_types = { 'markdown', 'Avante' },
+        display = {
+          action_palette = {
+            provider = 'telescope',
+            opts = {
+              show_default_actions = true,
+              show_default_prompt_library = true,
+            },
+          },
+          difff = {
+            provider = 'mini_diff',
+          },
         },
-        ft = { 'markdown', 'Avante' },
-      },
+      }
+      vim.keymap.set({ 'n', 'v' }, '<Leader>la', '<cmd>CodeCompanionActions<cr>', { noremap = true, silent = true, desc = 'Open CodeCompanion Action Palette' })
+      vim.keymap.set({ 'n', 'v' }, '<Leader>ll', '<cmd>CodeCompanionChat Toggle<cr>', { noremap = true, silent = true, desc = 'Toggle CodeCompanion Chat' })
+      vim.keymap.set('v', 'ga', '<cmd>CodeCompanionChat Add<cr>', { noremap = true, silent = true, desc = 'Add selection to CodeCompanion Chat' })
+
+      -- Expand 'cc' into 'CodeCompanion' in the command line
+      vim.cmd [[cab cc CodeCompanion]]
+    end,
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
     },
   },
 
