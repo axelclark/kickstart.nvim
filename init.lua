@@ -507,6 +507,13 @@ require('lazy').setup({
   { -- AI-powered coding, seamlessly in Neovim
     'olimorris/codecompanion.nvim',
     config = function()
+      local fmt = string.format
+
+      local constants = {
+        LLM_ROLE = 'llm',
+        USER_ROLE = 'user',
+        SYSTEM_ROLE = 'system',
+      }
       require('codecompanion').setup {
         strategies = {
           chat = {
@@ -535,8 +542,63 @@ require('lazy').setup({
               show_default_prompt_library = true,
             },
           },
-          difff = {
+          diff = {
             provider = 'mini_diff',
+          },
+        },
+        prompt_library = {
+          ['TDD Elixir workflow'] = {
+            strategy = 'workflow',
+            description = 'Use a TDD workflow to repeatedly edit then test code',
+            prompts = {
+              {
+                {
+                  name = 'Setup Test',
+                  role = constants.USER_ROLE,
+                  opts = { auto_submit = false },
+                  content = function()
+                    -- Enable turbo mode!!!
+                    vim.g.codecompanion_auto_tool_mode = true
+
+                    return [[### Instructions
+
+Your instructions here
+
+### Steps to Follow
+
+You are required to write code following the instructions provided above and test the correctness by running the designated test suite. Follow these steps exactly:
+
+1. Use the @cmd_runner tool to run the test suite with `mix test` (do this before you have updated the code).
+2. Update the code in #buffer{watch} using the @editor tool based on the test failure message
+3. Make sure you trigger both tools in the same response
+
+Notes
+1. You should normally only run the test for the test file in the buffer `mix test test/some/particular/file_test.exs`
+2. Make the smallest change possible to resolve the test failure message.  Do not try to one shot the solution.
+3. Do not leave a new line at the end of the file
+
+We'll repeat this cycle until the tests pass. Ensure no deviations from these steps.]]
+                  end,
+                },
+              },
+              {
+                {
+                  name = 'Repeat On Failure',
+                  role = constants.USER_ROLE,
+                  opts = { auto_submit = true },
+                  -- Scope this prompt to the cmd_runner tool
+                  condition = function()
+                    return vim.g.codecompanion_current_tool == 'cmd_runner'
+                  end,
+                  -- Repeat until the tests pass, as indicated by the testing flag
+                  -- which the cmd_runner tool sets on the chat buffer
+                  repeat_until = function(chat)
+                    return chat.tool_flags.testing == true
+                  end,
+                  content = 'The tests have failed. Can you edit the buffer using the test failure message making the smallest change possible and run the test suite again?',
+                },
+              },
+            },
           },
         },
       }
@@ -803,6 +865,7 @@ require('lazy').setup({
       format_on_save = {
         timeout_ms = 500,
         lsp_fallback = true,
+        stop_after_first = true,
       },
       formatters_by_ft = {
         lua = { 'stylua' },
@@ -811,10 +874,10 @@ require('lazy').setup({
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        javascript = { { 'prettierd', 'prettier' } },
-        css = { { 'prettierd', 'prettier' } },
-        html = { { 'prettierd', 'prettier' } },
-        mjml = { { 'prettierd', 'prettier' } },
+        javascript = { 'prettierd', 'prettier' },
+        css = { 'prettierd', 'prettier' },
+        html = { 'prettierd', 'prettier' },
+        mjml = { 'prettierd', 'prettier' },
       },
     },
   },
@@ -1002,6 +1065,18 @@ require('lazy').setup({
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
+      -- Visualize and work with diffs (like git changes)
+      --
+      -- Examples:
+      --  - ]h    - Go to [N]ext hunk
+      --  - [h    - Go to [P]revious hunk
+      --  - vgh   - [V]isually select and apply hunk
+      --  - vgH   - [V]isually select and reset hunk
+      --  - dgh   - [D]elete current hunk
+      --  - [H    - Go to first hunk
+      --  - ]H    - Go to last hunk
+      require('mini.diff').setup()
+
       -- Better Around/Inside textobjects
       --
       -- Examples:
@@ -1118,6 +1193,23 @@ require('lazy').setup({
     },
   },
 })
+
+local function open_github_file()
+  local remote = vim.fn.system('git config --get remote.origin.url'):gsub('\n', '')
+  local github_url = remote:gsub('git@github.com:', 'https://github.com/'):gsub('%.git$', '')
+
+  local branch = 'main'
+
+  local file_path = vim.fn.expand '%:p'
+  local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
+  local relative_path = file_path:gsub(git_root .. '/', '')
+
+  local url = string.format('%s/blob/%s/%s', github_url, branch, relative_path)
+
+  vim.fn.system(string.format('%s %s', 'open', url))
+end
+
+vim.keymap.set('n', '<leader>go', open_github_file)
 
 -- Configure projectionist
 vim.cmd [[
