@@ -185,6 +185,8 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 
 -- nvim-terminal mappings
 vim.keymap.set('n', '<leader>to', ':tabe | term<CR>', { desc = 'Open terminal in new tab' })
+vim.keymap.set('n', '<leader>tv', ':vsp | term<CR>', { desc = 'Open terminal in vertical split' })
+vim.keymap.set('n', '<leader>lc', ':vsp | term claude<CR>', { desc = 'Open Claude AI in vertical terminal' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
