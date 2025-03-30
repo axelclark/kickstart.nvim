@@ -878,6 +878,7 @@ We'll repeat this cycle until the tests pass. Ensure no deviations from these st
         javascript = { 'prettierd', 'prettier' },
         css = { 'prettierd', 'prettier' },
         html = { 'prettierd', 'prettier' },
+        json = { 'prettierd', 'prettier' },
         mjml = { 'prettierd', 'prettier' },
       },
     },
