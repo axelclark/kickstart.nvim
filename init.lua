@@ -859,6 +859,30 @@ We'll repeat this cycle until the tests pass. Ensure no deviations from these st
     end,
   },
 
+  { -- Autoformat
+    'stevearc/conform.nvim',
+    opts = {
+      notify_on_error = false,
+      format_on_save = {
+        timeout_ms = 500,
+        lsp_fallback = true,
+        stop_after_first = true,
+      },
+      formatters_by_ft = {
+        lua = { 'stylua' },
+        -- Conform can also run multiple formatters sequentially
+        -- python = { "isort", "black" },
+        --
+        -- You can use a sub-list to tell conform to run *until* a formatter
+        -- is found.
+        javascript = { 'prettierd', 'prettier' },
+        css = { 'prettierd', 'prettier' },
+        html = { 'prettierd', 'prettier' },
+        mjml = { 'prettierd', 'prettier' },
+      },
+    },
+  },
+
   { -- Autocompletion
     'saghen/blink.cmp',
     event = 'VimEnter',
@@ -937,9 +961,9 @@ We'll repeat this cycle until the tests pass. Ensure no deviations from these st
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
           copilot = {
-            name = "copilot",
-            module = "blink-cmp-copilot",
-            score_offset = 0,  -- Neutral priority
+            name = 'copilot',
+            module = 'blink-cmp-copilot',
+            score_offset = 0, -- Neutral priority
             async = true,
           },
         },
@@ -988,10 +1012,10 @@ We'll repeat this cycle until the tests pass. Ensure no deviations from these st
     cmd = 'Copilot',
     event = 'InsertEnter',
     config = function()
-      require('copilot').setup({
+      require('copilot').setup {
         suggestion = { enabled = false },
         panel = { enabled = false },
-      })
+      }
     end,
   },
 
@@ -1124,6 +1148,11 @@ We'll repeat this cycle until the tests pass. Ensure no deviations from these st
       task = '📌',
       lazy = '💤 ',
     },
+  },
+  checker = {
+    -- automatically check for plugin updates
+    enabled = true,
+    notify = true,
   },
 })
 
