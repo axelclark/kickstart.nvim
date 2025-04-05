@@ -166,17 +166,6 @@ vim.opt.spell = false
 vim.opt.swapfile = false
 vim.opt.backup = false
 
--- folding
-vim.opt.foldmethod = 'syntax'
--- Disable folding at startup
-vim.opt.foldenable = false
--- Set current fold level (higher values fold less)
-vim.opt.foldlevel = 99
--- Set initial fold level when opening new buffer
-vim.opt.foldlevelstart = 1
--- Maximum fold nesting level
-vim.opt.foldnestmax = 3
-
 -- Default splitting will cause your main splits to jump when opening an edgebar.
 -- To prevent this, set `splitkeep` to either `screen` or `topline`.
 vim.opt.splitkeep = 'screen'
@@ -263,19 +252,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.highlight.on_yank()
-  end,
-})
-
--- Setup Treesitter folding when available
-vim.api.nvim_create_autocmd({ 'FileType' }, {
-  group = vim.api.nvim_create_augroup('treesitter-folding', { clear = true }),
-  callback = function()
-    if require('nvim-treesitter.parsers').has_parser() then
-      vim.opt.foldmethod = 'expr'
-      vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
-    else
-      vim.opt.foldmethod = 'syntax'
-    end
   end,
 })
 
