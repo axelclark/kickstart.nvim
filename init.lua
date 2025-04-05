@@ -279,35 +279,6 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
-  -- MCP Hub for enhanced Model Control Protocol support
-  {
-    'ravitemer/mcphub.nvim',
-    dependencies = {
-      'nvim-lua/plenary.nvim', -- Required for Job and HTTP requests
-    },
-    -- Lazy load by default
-    cmd = 'MCPHub',
-    -- Install required mcp-hub npm module globally
-    build = 'npm install -g mcp-hub@latest',
-    config = function()
-      require('mcphub').setup {
-        -- Auto approve tool requests
-        auto_approve = true,
-        -- CodeCompanion integration
-        extensions = {
-          codecompanion = {
-            -- Show the MCP tool result in the chat buffer
-            show_result_in_chat = true,
-            -- Make chat #variables from MCP server resources
-            make_vars = true,
-            -- Make /slash_commands from MCP server prompts
-            make_slash_commands = true,
-          },
-        },
-      }
-    end,
-  },
-
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -554,15 +525,6 @@ require('lazy').setup({
         strategies = {
           chat = {
             adapter = 'anthropic',
-            tools = {
-              ['mcp'] = {
-                -- Lazy load mcphub when needed
-                callback = function()
-                  return require 'mcphub.extensions.codecompanion'
-                end,
-                description = 'Call tools and resources from the MCP Servers',
-              },
-            },
             slash_commands = {
               ['file'] = {
                 -- Location to the slash command in CodeCompanion
