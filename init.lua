@@ -522,9 +522,20 @@ require('lazy').setup({
         SYSTEM_ROLE = 'system',
       }
       require('codecompanion').setup {
+        adapters = {
+          xai = function()
+            return require('codecompanion.adapters').extend('xai', {
+              schema = {
+                model = {
+                  default = 'grok-3-latest',
+                },
+              },
+            })
+          end,
+        },
         strategies = {
           chat = {
-            adapter = 'anthropic',
+            adapter = 'xai',
             slash_commands = {
               ['file'] = {
                 -- Location to the slash command in CodeCompanion
@@ -538,7 +549,7 @@ require('lazy').setup({
             },
           },
           inline = {
-            adapter = 'anthropic',
+            adapter = 'xai',
           },
         },
         display = {
