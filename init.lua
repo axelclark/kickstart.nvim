@@ -534,6 +534,12 @@ require('lazy').setup({
           end,
         },
         strategies = {
+          inline = {
+            adapter = 'xai',
+          },
+          cmd = {
+            adapter = 'xai',
+          },
           chat = {
             adapter = 'xai',
             slash_commands = {
@@ -547,9 +553,6 @@ require('lazy').setup({
                 },
               },
             },
-          },
-          inline = {
-            adapter = 'xai',
           },
         },
         display = {
