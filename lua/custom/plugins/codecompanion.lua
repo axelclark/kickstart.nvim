@@ -10,26 +10,15 @@ return {
       SYSTEM_ROLE = 'system',
     }
     require('codecompanion').setup {
-      adapters = {
-        xai = function()
-          return require('codecompanion.adapters').extend('xai', {
-            schema = {
-              model = {
-                default = 'grok-3-latest',
-              },
-            },
-          })
-        end,
-      },
       strategies = {
         inline = {
-          adapter = 'xai',
+          adapter = 'anthropic',
         },
         cmd = {
-          adapter = 'xai',
+          adapter = 'anthropic',
         },
         chat = {
-          adapter = 'xai',
+          adapter = 'anthropic',
           slash_commands = {
             ['file'] = {
               -- Location to the slash command in CodeCompanion

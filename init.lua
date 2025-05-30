@@ -224,6 +224,7 @@ vim.keymap.set('n', '\\', ':Neotree toggle reveal<cr>', { desc = 'open Neotree s
 vim.keymap.set('n', '|', ':Neotree toggle current reveal_force_cwd<cr>', { desc = 'open Neotree' })
 
 vim.keymap.set('n', '<leader><leader>', '<C-^>', { desc = 'Switch between the last two files' })
+vim.keymap.set('n', '<leader>ya', ':%y+<CR>', { desc = '[Y]ank [A]ll buffer to clipboard' })
 
 -- nvim-config mappings
 vim.keymap.set('n', '<leader>vi', ':tabe $MYVIMRC<CR>', { desc = 'Open nvim config in new tab' })
@@ -1105,6 +1106,7 @@ require('lazy').setup({
     -- automatically check for plugin updates
     enabled = true,
     notify = true,
+    frequency = 604800, -- Check for updates every 7 days (604800 seconds)
   },
 })
 
