@@ -641,84 +641,78 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      -- Configure LSP servers using vim.lsp.config() for mason-lspconfig v2.0.0
+      vim.lsp.config('docker_compose_language_service', {
+        capabilities = capabilities,
+      })
+
+      vim.lsp.config('dockerls', {
+        capabilities = capabilities,
+      })
+
+      vim.lsp.config('terraformls', {
+        capabilities = capabilities,
+      })
+
+      vim.lsp.config('ts_ls', {
+        capabilities = capabilities,
+      })
+
+      vim.lsp.config('tailwindcss', {
+        capabilities = capabilities,
+        filetypes = { 'html', 'elixir', 'eelixir', 'heex' },
+        init_options = {
+          userLanguages = {
+            elixir = 'html-eex',
+            eelixir = 'html-eex',
+            heex = 'html-eex',
+          },
+        },
+        settings = {
+          tailwindCSS = {
+            experimental = {
+              classRegex = {
+                'class[:]\\s*"([^"]*)"',
+              },
+            },
+          },
+        },
+      })
+
+      vim.lsp.config('lua_ls', {
+        capabilities = capabilities,
+        settings = {
+          Lua = {
+            completion = {
+              callSnippet = 'Replace',
+            },
+            -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+            diagnostics = { disable = { 'missing-fields' } },
+          },
+        },
+      })
+
+      -- List of servers for mason-tool-installer
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        docker_compose_language_service = {},
-        dockerls = {},
-        terraformls = {},
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`tsserver`) will work just fine
-        ts_ls = {},
-        --
-        tailwindcss = {
-
-          capabilities = capabilities,
-          filetypes = { 'html', 'elixir', 'eelixir', 'heex' },
-          init_options = {
-            userLanguages = {
-              elixir = 'html-eex',
-              eelixir = 'html-eex',
-              heex = 'html-eex',
-            },
-          },
-          settings = {
-            tailwindCSS = {
-              experimental = {
-                classRegex = {
-                  'class[:]\\s*"([^"]*)"',
-                },
-              },
-            },
-          },
-        },
-
-        lua_ls = {
-          -- cmd = {...},
-          -- filetypes = { ...},
-          -- capabilities = {},
-          settings = {
-            Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              diagnostics = { disable = { 'missing-fields' } },
-            },
-          },
-        },
+        'docker_compose_language_service',
+        'dockerls',
+        'terraformls',
+        'ts_ls',
+        'tailwindcss',
+        'lua_ls',
       }
 
-      local lspconfig = require 'lspconfig'
-      local configs = require 'lspconfig.configs'
-
-      local lexical_config = {
-        filetypes = { 'elixir', 'eelixir', 'heex' },
+      -- Configure lexical LSP for Elixir using new vim.lsp API (Nvim 0.11+)
+      vim.lsp.config('lexical', {
         cmd = { '/Users/axelclark/workspace/lexical/_build/dev/package/lexical/bin/start_lexical.sh' },
+        filetypes = { 'elixir', 'eelixir', 'heex' },
+        root_markers = { 'mix.exs', '.git' },
+        capabilities = capabilities,
         settings = {},
-      }
+      })
 
-      if not configs.lexical then
-        configs.lexical = {
-          default_config = {
-            filetypes = lexical_config.filetypes,
-            cmd = lexical_config.cmd,
-            root_dir = function(fname)
-              return lspconfig.util.root_pattern('mix.exs', '.git')(fname) or vim.loop.os_homedir()
-            end,
-            -- optional settings
-            settings = lexical_config.settings,
-          },
-        }
-      end
-
-      lspconfig.lexical.setup {}
+      -- Enable the lexical LSP server
+      vim.lsp.enable 'lexical'
 
       -- Ensure the servers and tools above are installed
       --  To check the current status of installed tools and/or manually install
@@ -730,8 +724,7 @@ require('lazy').setup({
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
+      local ensure_installed = vim.list_extend(vim.deepcopy(servers), {
         'stylua', -- Used to format lua code
         'markdownlint', -- Linter for Markdown
         'hadolint', -- Linter for Dockerfiles
@@ -739,17 +732,10 @@ require('lazy').setup({
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+      -- Updated for mason-lspconfig v2.0.0 - removed handlers, using vim.lsp.config() above
       require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for tsserver)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
+        ensure_installed = servers,
+        automatic_enable = true, -- New setting in v2.0.0 (default: true)
       }
     end,
   },
