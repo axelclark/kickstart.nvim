@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -114,12 +114,15 @@ vim.o.showmode = false
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.o.clipboard = 'unnamedplus'
-end)
+-- vim.schedule(function()
+--   vim.o.clipboard = 'unnamedplus'
+-- end)
 
 -- Enable break indent
 vim.o.breakindent = true
+vim.o.wrap = true
+vim.o.breakindentopt = 'sbr'
+vim.o.showbreak = '↪>\\ '
 
 -- Save undo history
 vim.o.undofile = true
@@ -130,6 +133,9 @@ vim.o.smartcase = true
 
 -- Keep signcolumn on by default
 vim.o.signcolumn = 'yes'
+
+-- Set column line at 98 for elixir formatter breaks
+vim.o.colorcolumn = '98'
 
 -- Decrease update time
 vim.o.updatetime = 250
@@ -161,6 +167,17 @@ vim.o.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
 
+-- Disable spell checking by default
+vim.o.spell = false
+
+-- Disable swap and backup files
+vim.o.swapfile = false
+vim.o.backup = false
+
+-- Default splitting will cause your main splits to jump when opening an edgebar.
+-- To prevent this, set `splitkeep` to either `screen` or `topline`.
+vim.o.splitkeep = 'screen'
+
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
@@ -190,20 +207,47 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 -- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 -- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- Window navigation handled by smart-splits plugin
 
--- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
--- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
--- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
--- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
--- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+-- ============================================================================
+-- MY CUSTOMIZATIONS
+-- ============================================================================
+
+-- Terminal mappings
+vim.keymap.set('n', '<leader>to', ':tabe | term<CR>', { desc = 'Open terminal in new tab' })
+vim.keymap.set('n', '<leader>tv', ':vsp | term<CR>', { desc = 'Open terminal in vertical split' })
+vim.keymap.set('n', '<leader>lc', ':vsp | term claude<CR>', { desc = 'Open Claude AI in vertical terminal' })
+
+-- Test runner mappings
+vim.keymap.set('n', '<leader>tn', ':TestNearest<CR>', { silent = true, desc = 'Run nearest test' })
+vim.keymap.set('n', '<leader>tt', ':TestFile<CR>', { silent = true, desc = 'Run test file' })
+vim.keymap.set('n', '<leader>ta', ':TestSuite<CR>', { silent = true, desc = 'Run test suite' })
+vim.keymap.set('n', '<leader>tl', ':TestLast<CR>', { silent = true, desc = 'Run last test' })
+
+-- Buffer and file navigation
+vim.keymap.set('n', 'bl', ':ls<CR>:b<Space>', { noremap = true, desc = 'List buffers for navigation' })
+vim.keymap.set('n', '<leader><leader>', '<C-^>', { desc = 'Switch between the last two files' })
+vim.keymap.set('n', '<leader>ya', ':%y+<CR>', { desc = '[Y]ank [A]ll buffer to clipboard' })
+
+-- NeoTree keybinds
+vim.keymap.set('n', '\\', ':Neotree toggle reveal<cr>', { desc = 'Open Neotree side' })
+vim.keymap.set('n', '|', ':Neotree toggle current reveal_force_cwd<cr>', { desc = 'Open Neotree' })
+
+-- Configuration shortcuts
+vim.keymap.set('n', '<leader>vi', ':tabe $MYVIMRC<CR>', { desc = 'Open nvim config in new tab' })
+
+-- Git shortcuts
+vim.keymap.set('n', '<leader>gb', ':Git blame<CR>', { desc = 'Git [B]lame' })
+
+-- Move through line wraps like normal lines
+vim.api.nvim_set_keymap('n', 'k', 'gk', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', 'j', 'gj', { noremap = true, silent = true })
+
+-- Reset cursor to center position
+vim.keymap.set('n', '<C-u>', '<C-u>zz', { noremap = true, silent = true })
+vim.keymap.set('n', '<C-d>', '<C-d>zz', { noremap = true, silent = true })
+vim.keymap.set('n', 'n', 'nzz', { noremap = true, silent = true })
+vim.keymap.set('n', 'N', 'Nzz', { noremap = true, silent = true })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -248,6 +292,15 @@ rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+
+  -- My additional plugins
+  'vim-test/vim-test',
+  { 'tpope/vim-sensible', lazy = false },
+  { 'tpope/vim-projectionist', lazy = false },
+  { 'tpope/vim-fugitive', lazy = false },
+  { 'tpope/vim-abolish', lazy = false },
+  { 'amadeus/vim-mjml', lazy = false },
+  { 'max397574/better-escape.nvim', opts = {} },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -347,6 +400,7 @@ require('lazy').setup({
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
+        { '<leader>l', group = '[L]LM Actions' },
       },
     },
   },
@@ -377,6 +431,7 @@ require('lazy').setup({
         end,
       },
       { 'nvim-telescope/telescope-ui-select.nvim' },
+      { 'GianniBYoung/chezmoi-telescope.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
@@ -423,19 +478,24 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension, 'chezmoi')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
       vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
       vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
       vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+      vim.keymap.set('n', '<C-p>', builtin.find_files, { desc = '[S]earch [F]iles' })
       vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
       vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
       vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>sb', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>sc', function()
+        require('telescope').extensions.chezmoi.dotfiles()
+      end, { desc = '[S]earch [C]hezmoi dotfiles' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -684,6 +744,31 @@ require('lazy').setup({
         -- ts_ls = {},
         --
 
+        -- My additional language servers
+        docker_compose_language_service = {},
+        dockerls = {},
+        terraformls = {},
+        ts_ls = {},
+        tailwindcss = {
+          filetypes = { 'html', 'elixir', 'eelixir', 'heex' },
+          init_options = {
+            userLanguages = {
+              elixir = 'html-eex',
+              eelixir = 'html-eex',
+              heex = 'html-eex',
+            },
+          },
+          settings = {
+            tailwindCSS = {
+              experimental = {
+                classRegex = {
+                  'class[:]\\s*"([^"]*)"',
+                },
+              },
+            },
+          },
+        },
+
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -694,11 +779,22 @@ require('lazy').setup({
                 callSnippet = 'Replace',
               },
               -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
+              diagnostics = { disable = { 'missing-fields' } },
             },
           },
         },
       }
+      -- Configure lexical LSP for Elixir using new vim.lsp API (Nvim 0.11+)
+      vim.lsp.config('lexical', {
+        cmd = { '/Users/axelclark/workspace/lexical/_build/dev/package/lexical/bin/start_lexical.sh' },
+        filetypes = { 'elixir', 'eelixir', 'heex' },
+        root_markers = { 'mix.exs', '.git' },
+        capabilities = capabilities,
+        settings = {},
+      })
+
+      -- Enable the lexical LSP server
+      vim.lsp.enable 'lexical'
 
       -- Ensure the servers and tools above are installed
       --
@@ -772,7 +868,11 @@ require('lazy').setup({
         -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        css = { 'prettierd', 'prettier', stop_after_first = true },
+        html = { 'prettierd', 'prettier', stop_after_first = true },
+        json = { 'prettierd', 'prettier', stop_after_first = true },
+        mjml = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },
@@ -782,6 +882,8 @@ require('lazy').setup({
     event = 'VimEnter',
     version = '1.*',
     dependencies = {
+      -- GitHub Copilot integration for blink.cmp
+      'fang2hou/blink-copilot',
       -- Snippet Engine
       {
         'L3MON4D3/LuaSnip',
@@ -850,12 +952,17 @@ require('lazy').setup({
       completion = {
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = false, auto_show_delay_ms = 500 },
+        documentation = { auto_show = true, auto_show_delay_ms = 500 },
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'lazydev' },
+        default = { 'lsp', 'path', 'snippets', 'buffer', 'copilot', 'lazydev' },
         providers = {
+          copilot = {
+            name = 'copilot',
+            module = 'blink-copilot',
+            async = true,
+          },
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
         },
       },
@@ -869,7 +976,7 @@ require('lazy').setup({
       -- the rust implementation via `'prefer_rust_with_warning'`
       --
       -- See :h blink-cmp-config-fuzzy for more information
-      fuzzy = { implementation = 'lua' },
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
 
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },
@@ -881,20 +988,19 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
+    'rebelot/kanagawa.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
-      }
-
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'kanagawa-wave'
+
+      -- You can configure highlights by doing something like
+      vim.cmd.hi 'Comment gui=none'
+
+      -- Configure Elixir module color
+      vim.api.nvim_set_hl(0, '@module.elixir', { fg = '#7aa89f' })
     end,
   },
 
@@ -944,7 +1050,36 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
+        -- My additional languages
+        'cmake',
+        'cpp',
+        'css',
+        'dockerfile',
+        'eex',
+        'elixir',
+        'go',
+        'heex',
+        'json',
+        'just',
+        'python',
+        'rust',
+        'terraform',
+        'toml',
+        'typescript',
+        'yaml',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -984,7 +1119,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
@@ -1011,6 +1146,143 @@ require('lazy').setup({
     },
   },
 })
+
+-- ============================================================================
+-- ADDITIONAL CUSTOMIZATIONS
+-- ============================================================================
+
+-- GitHub file opener function
+local function open_github_file()
+  local remote = vim.fn.system('git config --get remote.origin.url'):gsub('\n', '')
+  local github_url = remote:gsub('git@github.com:', 'https://github.com/'):gsub('%.git$', '')
+
+  local branch = 'main'
+
+  local file_path = vim.fn.expand '%:p'
+  local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
+  local relative_path = file_path:gsub(git_root .. '/', '')
+
+  local url = string.format('%s/blob/%s/%s', github_url, branch, relative_path)
+
+  vim.fn.system(string.format('%s %s', 'open', url))
+end
+
+vim.keymap.set('n', '<leader>go', open_github_file)
+
+-- Configure projectionist for Elixir projects
+vim.cmd [[
+  let g:projectionist_heuristics = {
+        \ "mix.exs": {
+        \   "lib/**/live/*_live.ex": {
+        \     "type": "live",
+        \     "alternate": "test/{dirname}/live/{basename}_live_test.exs",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Live do",
+        \       "  use {dirname|camelcase|capitalize}, :live_view",
+        \       "",
+        \       "end"
+        \     ]
+        \   },
+        \   "test/**/live/*_live_test.exs": {
+        \     "alternate": "lib/{dirname}/live/{basename}_live.ex",
+        \     "type": "test",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ViewTest do",
+        \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
+        \       "  import Phoenix.LiveViewTest",
+        \       "",
+        \       "end"
+        \     ]
+        \   },
+        \   "lib/**/components/*.ex": {
+        \     "type": "component",
+        \     "alternate": "test/{dirname}/components/{basename}_test.exs",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize} do",
+        \       "  use Phoenix.Component",
+        \       "end"
+        \     ]
+        \   },
+        \   "test/**/components/*_test.exs": {
+        \     "alternate": "lib/{dirname}/components/{basename}.ex",
+        \     "type": "test",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Test do",
+        \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
+        \       "",
+        \       "  alias {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}",
+        \       "",
+        \       "end"
+        \     ]
+        \   },
+        \   "lib/**/controllers/*_controller.ex": {
+        \     "type": "controller",
+        \     "alternate": "test/{dirname}/controllers/{basename}_controller_test.exs",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}Controller do",
+        \       "  use {dirname|camelcase|capitalize}, :controller",
+        \       "end"
+        \     ]
+        \   },
+        \   "test/**/controllers/*_controller_test.exs": {
+        \     "alternate": "lib/{dirname}/controllers/{basename}_controller.ex",
+        \     "type": "test",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ControllerTest do",
+        \       "  use {dirname|camelcase|capitalize}.ConnCase, async: true",
+        \       "",
+        \       "end"
+        \     ]
+        \   },
+        \   "lib/**/views/*_view.ex": {
+        \     "type": "view",
+        \     "alternate": "test/{dirname}/views/{basename}_view_test.exs",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}View do",
+        \       "  use {dirname|camelcase|capitalize}, :view",
+        \       "end"
+        \     ]
+        \   },
+        \   "test/**/views/*_view_test.exs": {
+        \     "alternate": "lib/{dirname}/views/{basename}_view.ex",
+        \     "type": "test",
+        \     "template": [
+        \       "defmodule {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}ViewTest do",
+        \       "  use {dirname|camelcase|capitalize}.DataCase",
+        \       "",
+        \       "  alias {dirname|camelcase|capitalize}.{basename|camelcase|capitalize}View",
+        \       "",
+        \       "end"
+        \     ]
+        \   },
+        \   "lib/*.ex": {
+        \     "alternate": "test/{}_test.exs",
+        \     "type": "lib",
+        \     "template": [
+        \       "defmodule {camelcase|capitalize|dot} do",
+        \       "end"
+        \     ]
+        \   },
+        \   "test/*_test.exs": {
+        \     "alternate": "lib/{}.ex",
+        \     "type": "test",
+        \     "template": [
+        \       "defmodule {camelcase|capitalize|dot}Test do",
+        \       "  use {dirname|camelcase|capitalize}.DataCase",
+        \       "",
+        \       "  alias {camelcase|capitalize|dot}",
+        \       "",
+        \       "end"
+        \     ]
+        \   }
+        \ }
+        \}
+  ]]
+
+-- Configure test strategy
+vim.cmd [[
+    let test#strategy = "neovim"
+  ]]
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

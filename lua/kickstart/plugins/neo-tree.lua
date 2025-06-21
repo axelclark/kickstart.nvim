@@ -14,10 +14,18 @@ return {
     { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
   },
   opts = {
+    close_if_last_window = true,
     filesystem = {
       window = {
         mappings = {
           ['\\'] = 'close_window',
+        },
+      },
+      filtered_items = {
+        hide_dotfiles = false,
+        hide_gitignored = false,
+        never_show = {
+          '.DS_Store',
         },
       },
     },
