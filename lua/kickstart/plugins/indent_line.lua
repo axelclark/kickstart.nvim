@@ -5,5 +5,8 @@ return {
     -- See `:help ibl`
     main = 'ibl',
     opts = {},
+    keys = {
+      { '<leader>ti', '<cmd>IBLToggle<cr>', desc = 'Toggle indent guides' },
+    },
   },
 }
