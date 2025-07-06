@@ -213,6 +213,13 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 -- MY CUSTOMIZATIONS
 -- ============================================================================
 
+vim.o.expandtab = true -- Use spaces instead of tabs
+vim.o.tabstop = 2 -- Number of spaces tabs count for
+vim.o.softtabstop = 2 -- Number of spaces tabs count for while editing
+vim.o.shiftwidth = 2 -- Size of indent
+vim.o.shiftround = true -- Round indent to multiple of shiftwidth
+vim.o.smartindent = true -- Insert indents automatically
+
 -- Terminal mappings
 vim.keymap.set('n', '<leader>to', ':tabe | term<CR>', { desc = 'Open terminal in new tab' })
 vim.keymap.set('n', '<leader>tv', ':vsp | term<CR>', { desc = 'Open terminal in vertical split' })
