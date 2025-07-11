@@ -1161,6 +1161,13 @@ require('lazy').setup({
 -- ADDITIONAL CUSTOMIZATIONS
 -- ============================================================================
 
+-- Get file path relative to git root
+local function get_git_relative_path()
+  local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
+  local file_path = vim.fn.expand '%:p'
+  return file_path:gsub(git_root .. '/', '')
+end
+
 -- GitHub file opener function
 local function open_github_file()
   local remote = vim.fn.system('git config --get remote.origin.url'):gsub('\n', '')
@@ -1168,9 +1175,7 @@ local function open_github_file()
 
   local branch = 'main'
 
-  local file_path = vim.fn.expand '%:p'
-  local git_root = vim.fn.system('git rev-parse --show-toplevel'):gsub('\n', '')
-  local relative_path = file_path:gsub(git_root .. '/', '')
+  local relative_path = get_git_relative_path()
 
   local url = string.format('%s/blob/%s/%s', github_url, branch, relative_path)
 
@@ -1178,6 +1183,11 @@ local function open_github_file()
 end
 
 vim.keymap.set('n', '<leader>go', open_github_file)
+vim.keymap.set('n', '<leader>yf', function()
+  local relative_path = get_git_relative_path()
+  vim.fn.setreg('+', relative_path)
+  print('Yanked: ' .. relative_path)
+end, { desc = '[Y]ank [F]ilename relative to git root' })
 
 -- Configure projectionist for Elixir projects
 vim.cmd [[
