@@ -792,8 +792,9 @@ require('lazy').setup({
         },
       }
       -- Configure lexical LSP for Elixir using new vim.lsp API (Nvim 0.11+)
+      local home = vim.fn.expand('~')
       vim.lsp.config('lexical', {
-        cmd = { '/Users/axelclark/workspace/lexical/_build/dev/package/lexical/bin/start_lexical.sh' },
+        cmd = { home .. '/workspace/lexical/_build/dev/package/lexical/bin/start_lexical.sh' },
         filetypes = { 'elixir', 'eelixir', 'heex' },
         root_markers = { 'mix.exs', '.git' },
         capabilities = capabilities,
