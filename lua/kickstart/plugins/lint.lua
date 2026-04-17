@@ -41,8 +41,8 @@ return {
       -- lint.linters_by_ft['terraform'] = nil
       -- lint.linters_by_ft['text'] = nil
 
-      -- Create autocommand which carries out the actual linting
-      -- on the specified events.
+      local disabled_ft = { markdown = true }
+
       local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
       vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
         group = lint_augroup,
@@ -50,11 +50,30 @@ return {
           -- Only run the linter in buffers that you can modify in order to
           -- avoid superfluous noise, notably within the handy LSP pop-ups that
           -- describe the hovered symbol using Markdown.
-          if vim.bo.modifiable then
+          if not disabled_ft[vim.bo.filetype] and vim.bo.modifiable then
             lint.try_lint()
           end
         end,
       })
+
+      vim.api.nvim_create_user_command('LintToggle', function()
+        local ft = vim.bo.filetype
+        if ft == '' then
+          vim.notify('No filetype on current buffer', vim.log.levels.WARN)
+          return
+        end
+        if disabled_ft[ft] then
+          disabled_ft[ft] = nil
+          lint.try_lint()
+          vim.notify('Linting enabled for ' .. ft, vim.log.levels.INFO)
+        else
+          disabled_ft[ft] = true
+          vim.diagnostic.reset(nil, 0)
+          vim.notify('Linting disabled for ' .. ft, vim.log.levels.INFO)
+        end
+      end, { desc = 'Toggle nvim-lint for current filetype' })
+
+      vim.keymap.set('n', '<leader>tL', '<cmd>LintToggle<cr>', { desc = '[T]oggle [L]int' })
     end,
   },
 }
